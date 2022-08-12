@@ -1,0 +1,24 @@
+extends layout
+
+block content
+  h1 Books
+  
+  p.create-new-book
+    a(href="/books/new") Create new book
+
+  table
+    thead 
+      tr 
+        th Title
+        th Author 
+        th Genre 
+        th Year
+
+    tbody 
+    for book in books 
+      tr
+        td 
+          a(href=`/books/${book.id}`) #{book.title}
+        td= book.author
+        td= book.genre
+        td= book.year
