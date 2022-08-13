@@ -25,30 +25,19 @@ router.get('/books', asyncHandler(async (req, res, next) => {
   let page = req.query.page;
   !page || page <= 0 ? res.redirect("?page=1") : null;
   const books = await Book.findAll({order:[["ID", "DESC"]], offset: (page - 1) * 9, limit: 9,});
-
-  books.length <= 0
-  ? res.redirect("?page=1") + (page = 1)
-  : res.render("index", { books, page, title: "Books" });
+  books.length <= 0 ? res.redirect("?page=1") + (page = 1) : res.render("index", { books, page, title: "Books" });
 }));
 
-//search database
+// Renders books from databased based on search
 router.get("/books/search", asyncHandler(async (req, res, next) => {
-    const { query } = req.query;
-    const books = await Book.findAll({
-      where: {
-        [Op.or]: [
-          { title: { [Op.like]: `%${query}%` } },
-          { author: { [Op.like]: `%${query}%` } },
-          { genre: { [Op.like]: `%${query}%` } },
-          { year: { [Op.like]: `%${query}%` } },
-        ],
-      },
-    });
-    books.length > 0
-    ? res.render("index", { books, query, title: "Search Results"})
-    : res.render("index", { books, query, title: "No Search Results Found"});
-  })
+  const { query } = req.query;
+  const books = await Book.findAll({
+    where: { [Op.or]: [ { title: { [Op.like]: `%${query}%` } }, { author: { [Op.like]: `%${query}%` } }, { genre: { [Op.like]: `%${query}%` } }, { year: { [Op.like]: `%${query}%` } }, ],},});
+  books.length > 0 ? res.render("index", { books, query, title: "Search Results"}) : res.render("index", { books, query, title: "No Search Results Found"});
+})
 );
+
+module.exports = router;
 
 // Renders new book form
 router.get('/books/new', asyncHandler(async (req, res) => {
@@ -77,7 +66,7 @@ router.get('/books/:id', asyncHandler(async(req, res, next) => {
   if(book) {
     res.render("update-book", { book , title: "Update Book" });      
   } else {
-    res.render("page-not-found", {message: "No Book Found"});
+    res.render("page-not-found");
   }
 }));
 
@@ -110,8 +99,7 @@ router.post('/books/:id/delete', asyncHandler(async (req, res) => {
     await book.destroy();
     res.redirect("/books");
   } else {
-    res.sendStatus(404);
+    res.render('page-not-found')
   }
 }));
 
-module.exports = router;
