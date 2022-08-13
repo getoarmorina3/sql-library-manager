@@ -1,13 +1,17 @@
 extends layout
 
 block content
-    h1 Update Book
+
+    h1= title
+
     include form-error
+
     form(method="post")
+
         p
             label(for="title") Title
             input(type="text" name="title" id="title" value=book.title)
-        
+    
         p
             label(for="author") Author
             input(type="text" name="author" id="author" value=book.author)  
@@ -24,6 +28,7 @@ block content
             input(type="submit", value="Update Book")
           
     form(action=`/books/${book.id}/delete` method="post") 
+    
         p
             a(class="button" href="/") Cancel 
         p
